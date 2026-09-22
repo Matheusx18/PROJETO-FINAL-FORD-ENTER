@@ -1,0 +1,100 @@
+.escalacao-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: #1a1a2e; 
+  min-height: 100vh;
+  color: white;
+  font-family: 'Arial Black', sans-serif;
+}
+
+.campo-3d {
+  width: 100%;
+  max-width: 600px;
+  height: 800px;
+  background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+  border: 4px solid rgba(255, 255, 255, 0.4);
+  border-radius: 10px;
+  position: relative;
+  /* O segredo da inclinação do campo */
+  transform: perspective(1200px) rotateX(25deg);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-top: 40px;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.1) 40px,
+      rgba(255,255,255,0.1) 80px
+    );
+}
+
+.linha {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.card-jogador {
+  background: #111;
+  width: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 10px 15px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  transform: rotateX(-25deg); 
+}
+
+.card-jogador:hover {
+  transform: rotateX(-25deg) scale(1.15) translateY(-10px);
+  box-shadow: 0 15px 25px rgba(0,255,0,0.4);
+}
+
+.camisa {
+  height: 60px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-top: 5px;
+}
+
+.camisa.atacante { background-image: url('https://cdn-icons-png.flaticon.com/512/1865/1865809.png'); filter: invert(40%) sepia(80%) saturate(3000%) hue-rotate(340deg); }
+.camisa.meia { background-image: url('https://cdn-icons-png.flaticon.com/512/1865/1865809.png'); filter: invert(80%); }
+.camisa.zagueiro { background-image: url('https://cdn-icons-png.flaticon.com/512/1865/1865809.png'); filter: invert(20%) sepia(100%) saturate(2000%) hue-rotate(200deg); }
+
+.nome-jogador {
+  background: #0022cc;
+  color: white;
+  font-size: 11px;
+  text-align: center;
+  padding: 4px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preco-jogador {
+  background: #f0f0f0;
+  color: #000;
+  font-size: 12px;
+  text-align: center;
+  font-weight: bold;
+  padding: 3px 0;
+}
+
+@media (max-width: 600px) {
+  .campo-3d {
+    transform: perspective(1000px) rotateX(15deg);
+    height: 600px;
+  }
+  .card-jogador {
+    width: 65px;
+  }
+}

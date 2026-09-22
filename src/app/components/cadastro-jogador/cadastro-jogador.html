@@ -1,0 +1,72 @@
+<div class="space-y-6 animate-fadeIn">
+  <div>
+    <h2 class="text-2xl font-black text-white">Gestão de Atletas</h2>
+    <p class="text-sm text-gray-400">Adicione e controle os jogadores com persistência automática.</p>
+  </div>
+
+  <div *ngIf="userPerfil === 'Administrador'" class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-4">
+    <h3 class="font-bold text-[#00FF00] text-sm uppercase">Cadastrar Novo Atleta</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <input [(ngModel)]="novoJogador.nome" type="text" placeholder="Nome completo" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
+      <input [(ngModel)]="novoJogador.apelido" type="text" placeholder="Apelido" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
+      <select [(ngModel)]="novoJogador.posicao" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
+        <option value="Goleiro">Goleiro</option>
+        <option value="Zagueiro">Zagueiro</option>
+        <option value="Lateral">Lateral</option>
+        <option value="Volante">Volante</option>
+        <option value="Meia">Meia</option>
+        <option value="Atacante">Atacante</option>
+      </select>
+      <input [(ngModel)]="novoJogador.numeroCamisa" type="number" placeholder="Nº Camisa" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
+    </div>
+    <button (click)="cadastrar()" class="bg-[#00FF00] hover:bg-[#00dd00] text-gray-950 font-extrabold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-[#00FF00]/20 cursor-pointer">
+      Salvar Atleta 💾
+    </button>
+  </div>
+
+  <!-- Tabela -->
+  <div class="bg-[#121824] rounded-2xl border border-gray-800 overflow-hidden">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="border-b border-gray-800 bg-[#0d131f] text-gray-400 text-xs uppercase">
+          <th class="p-4">Atleta</th>
+          <th class="p-4">Posição</th>
+          <th class="p-4">Camisa</th>
+          <th class="p-4">Nota Cartola</th>
+          <th class="p-4">Mensalidade</th>
+          <th class="p-4 text-right" *ngIf="userPerfil === 'Administrador'">Ações</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-800/60 text-sm">
+        <tr *ngFor="let p of jogadores" class="hover:bg-gray-800/30 transition">
+          <td class="p-4 font-semibold text-white flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-[#00FF00]/10 text-[#00FF00] flex items-center justify-center font-bold text-xs border border-[#00FF00]/20">
+              {{ p.numeroCamisa }}
+            </div>
+            <div>
+              <p>{{ p.nome }}</p>
+              <span class="text-xs text-gray-500">"{{ p.apelido }}"</span>
+            </div>
+          </td>
+          <td class="p-4 text-gray-300">{{ p.posicao }}</td>
+          <td class="p-4 text-gray-300">#{{ p.numeroCamisa }}</td>
+          <td class="p-4">
+            <span class="font-black text-[#00FF00] bg-[#00FF00]/10 px-2.5 py-1 rounded-lg border border-[#00FF00]/20">
+              ⭐ {{ p.notaGeral }}
+            </span>
+          </td>
+          <td class="p-4">
+            <span [ngClass]="{'text-[#00FF00]': p.statusPagamento === 'Pago', 'text-yellow-400': p.statusPagamento === 'Pendente', 'text-red-400': p.statusPagamento === 'Atrasado'}" class="text-xs font-bold px-2.5 py-1 rounded-full bg-gray-900 border border-gray-800">
+              {{ p.statusPagamento }}
+            </span>
+          </td>
+          <td class="p-4 text-right" *ngIf="userPerfil === 'Administrador'">
+            <button (click)="excluir(p.id)" class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20 transition cursor-pointer">
+              Excluir
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

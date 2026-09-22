@@ -1,0 +1,55 @@
+<div class="space-y-6 animate-fadeIn">
+  <div>
+    <h2 class="text-2xl font-black text-white">Scout & Notas (Estilo Cartola FC)</h2>
+    <p class="text-sm text-gray-400">Insira o desempenho pós-partida para calcular a nota ponderada automaticamente.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div *ngFor="let p of jogadores" class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-4">
+      <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+        <div>
+          <h4 class="font-bold text-base text-white">{{ p.nome }} <span class="text-xs text-gray-500">({{ p.posicao }})</span></h4>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-gray-400">Nota:</span>
+          <span class="text-xl font-black text-[#00FF00] ml-2">⭐ {{ p.notaGeral }}</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="flex justify-between items-center bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-gray-400 font-semibold">Gols ⚽</span>
+          <div class="flex items-center space-x-2">
+            <button (click)="alterarScout(p, 'gols', -1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">-</button>
+            <span class="font-bold w-4 text-center text-white">{{ p.estatisticas.gols }}</span>
+            <button (click)="alterarScout(p, 'gols', 1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">+</button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-gray-400 font-semibold">Assistências 🎯</span>
+          <div class="flex items-center space-x-2">
+            <button (click)="alterarScout(p, 'assistencias', -1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">-</button>
+            <span class="font-bold w-4 text-center text-white">{{ p.estatisticas.assistencias }}</span>
+            <button (click)="alterarScout(p, 'assistencias', 1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">+</button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-gray-400 font-semibold">Desarmes 🛡️</span>
+          <div class="flex items-center space-x-2">
+            <button (click)="alterarScout(p, 'desarmes', -1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">-</button>
+            <span class="font-bold w-4 text-center text-white">{{ p.estatisticas.desarmes }}</span>
+            <button (click)="alterarScout(p, 'desarmes', 1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">+</button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center bg-gray-900 p-2.5 rounded-xl border border-gray-800">
+          <span class="text-gray-400 font-semibold">Faltas ⚠️</span>
+          <div class="flex items-center space-x-2">
+            <button (click)="alterarScout(p, 'faltas', -1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">-</button>
+            <span class="font-bold w-4 text-center text-red-400">{{ p.estatisticas.faltas }}</span>
+            <button (click)="alterarScout(p, 'faltas', 1)" class="w-6 h-6 bg-gray-800 rounded font-bold hover:bg-gray-700 cursor-pointer">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

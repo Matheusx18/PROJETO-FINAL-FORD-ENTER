@@ -1,0 +1,40 @@
+<div class="space-y-6 animate-fadeIn">
+  <div>
+    <h2 class="text-2xl font-black text-white">Sorteio Inteligente de Equipes</h2>
+    <p class="text-sm text-gray-400">Selecione os atletas presentes para gerar times perfeitamente balanceados.</p>
+  </div>
+
+  <div class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-4">
+    <h3 class="font-bold text-sm uppercase text-[#00FF00]">Atletas Disponíveis</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div *ngFor="let p of jogadores" (click)="toggleSelecao(p.id)" [ngClass]="idsParaSorteio.includes(p.id) ? 'bg-[#00FF00]/20 border-[#00FF00] text-[#00FF00]' : 'bg-gray-900 border-gray-800 text-gray-400'" class="p-3 rounded-xl border cursor-pointer transition text-sm font-semibold flex justify-between items-center">
+        <span>{{ p.nome }}</span>
+        <span class="text-xs">⭐ {{ p.notaGeral }}</span>
+      </div>
+    </div>
+    <button (click)="sortear()" class="w-full bg-[#00FF00] hover:bg-[#00dd00] text-gray-950 font-extrabold py-3.5 rounded-xl transition shadow-lg shadow-[#00FF00]/20 cursor-pointer">
+      Realizar Sorteio Justo ⚡
+    </button>
+  </div>
+
+  <div *ngIf="timeA.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+    <div class="bg-[#121824] p-6 rounded-2xl border border-[#00FF00]/30 space-y-4">
+      <h3 class="font-black text-lg text-[#00FF00]">🟢 TIME A</h3>
+      <ul class="space-y-2">
+        <li *ngFor="let j of timeA" class="bg-gray-900 p-3 rounded-xl flex justify-between items-center text-sm border border-gray-800 text-white">
+          <span>{{ j.nome }} <span class="text-xs text-gray-500">({{ j.posicao }})</span></span>
+          <span class="font-bold text-[#00FF00]">Nota: {{ j.notaGeral }}</span>
+        </li>
+      </ul>
+    </div>
+    <div class="bg-[#121824] p-6 rounded-2xl border border-blue-500/30 space-y-4">
+      <h3 class="font-black text-lg text-blue-400">🔵 TIME B</h3>
+      <ul class="space-y-2">
+        <li *ngFor="let j of timeB" class="bg-gray-900 p-3 rounded-xl flex justify-between items-center text-sm border border-gray-800 text-white">
+          <span>{{ j.nome }} <span class="text-xs text-gray-500">({{ j.posicao }})</span></span>
+          <span class="font-bold text-blue-400">Nota: {{ j.notaGeral }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
