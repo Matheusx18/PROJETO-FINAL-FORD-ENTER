@@ -1,40 +1,55 @@
-<div class="space-y-6 animate-fadeIn">
+<div class="space-y-6">
   <div>
-    <h2 class="text-2xl font-black text-white">Sorteio Inteligente de Equipes</h2>
-    <p class="text-sm text-gray-400">Selecione os atletas presentes para gerar times perfeitamente balanceados.</p>
+    <h2 class="text-2xl font-black text-white">Sorteio Equilibrado de Times</h2>
+    <p class="text-sm text-gray-400">Selecione os atletas presentes para dividir as equipas de forma equilibrada pelas notas.</p>
   </div>
 
-  <div class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-4">
-    <h3 class="font-bold text-sm uppercase text-[#00FF00]">Atletas Disponíveis</h3>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <div *ngFor="let p of jogadores" (click)="toggleSelecao(p.id)" [ngClass]="idsParaSorteio.includes(p.id) ? 'bg-[#00FF00]/20 border-[#00FF00] text-[#00FF00]' : 'bg-gray-900 border-gray-800 text-gray-400'" class="p-3 rounded-xl border cursor-pointer transition text-sm font-semibold flex justify-between items-center">
-        <span>{{ p.nome }}</span>
-        <span class="text-xs">⭐ {{ p.notaGeral }}</span>
+  <div class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <label class="text-xs text-gray-400 font-semibold">Número de Equipas:</label>
+        <select [(ngModel)]="numTimes" class="bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-[#00FF00]">
+          <option [ngValue]="2">2 Times (Time A vs Time B)</option>
+          <option [ngValue]="3">3 Times</option>
+          <option [ngValue]="4">4 Times</option>
+        </select>
+      </div>
+
+      <button (click)="sortear()" class="bg-[#00FF00] text-gray-950 font-bold px-6 py-2.5 rounded-xl text-sm hover:opacity-90 transition cursor-pointer">
+        🎲 Sortear Equipas
+      </button>
+    </div>
+
+    <div>
+      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Confirmar Presença na Pelada</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        <div *ngFor="let p of cartolaService.players" class="bg-[#0d131f] border border-gray-800 p-3 rounded-xl flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" [(ngModel)]="selectedPlayers[p.id]" class="accent-[#00FF00] w-4 h-4 cursor-pointer">
+            <div>
+              <p class="text-sm font-bold text-white">{{ p.nome }}</p>
+              <p class="text-[10px] text-gray-500">{{ p.posicao }} - Nota {{ p.nota.toFixed(1) }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-    <button (click)="sortear()" class="w-full bg-[#00FF00] hover:bg-[#00dd00] text-gray-950 font-extrabold py-3.5 rounded-xl transition shadow-lg shadow-[#00FF00]/20 cursor-pointer">
-      Realizar Sorteio Justo ⚡
-    </button>
   </div>
 
-  <div *ngIf="timeA.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-    <div class="bg-[#121824] p-6 rounded-2xl border border-[#00FF00]/30 space-y-4">
-      <h3 class="font-black text-lg text-[#00FF00]">🟢 TIME A</h3>
-      <ul class="space-y-2">
-        <li *ngFor="let j of timeA" class="bg-gray-900 p-3 rounded-xl flex justify-between items-center text-sm border border-gray-800 text-white">
-          <span>{{ j.nome }} <span class="text-xs text-gray-500">({{ j.posicao }})</span></span>
-          <span class="font-bold text-[#00FF00]">Nota: {{ j.notaGeral }}</span>
-        </li>
-      </ul>
-    </div>
-    <div class="bg-[#121824] p-6 rounded-2xl border border-blue-500/30 space-y-4">
-      <h3 class="font-black text-lg text-blue-400">🔵 TIME B</h3>
-      <ul class="space-y-2">
-        <li *ngFor="let j of timeB" class="bg-gray-900 p-3 rounded-xl flex justify-between items-center text-sm border border-gray-800 text-white">
-          <span>{{ j.nome }} <span class="text-xs text-gray-500">({{ j.posicao }})</span></span>
-          <span class="font-bold text-blue-400">Nota: {{ j.notaGeral }}</span>
-        </li>
-      </ul>
+  <div *ngIf="timesGerados.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div *ngFor="let t of timesGerados" class="bg-[#121824] rounded-2xl border border-gray-800 overflow-hidden">
+      <div class="p-4 bg-[#0d131f] border-b border-gray-800 flex justify-between items-center">
+        <h3 class="font-black text-[#00FF00] text-base">{{ t.nome }}</h3>
+        <span class="text-xs bg-gray-800 text-gray-300 font-bold px-3 py-1 rounded-full">
+          Média: {{ t.mediaNota }} pts
+        </span>
+      </div>
+      <div class="p-4 divide-y divide-gray-800">
+        <div *ngFor="let j of t.jogadores" class="py-2.5 flex justify-between items-center">
+          <span class="text-sm text-white font-medium">{{ j.nome }} <span class="text-xs text-gray-500">({{ j.posicao }})</span></span>
+          <span class="text-xs text-[#00FF00] font-bold">{{ j.nota.toFixed(1) }} pts</span>
+        </div>
+      </div>
     </div>
   </div>
 </div>

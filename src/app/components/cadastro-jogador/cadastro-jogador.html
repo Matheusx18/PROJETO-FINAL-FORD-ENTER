@@ -1,72 +1,73 @@
-<div class="space-y-6 animate-fadeIn">
+<div class="space-y-6">
   <div>
     <h2 class="text-2xl font-black text-white">Gestão de Atletas</h2>
-    <p class="text-sm text-gray-400">Adicione e controle os jogadores com persistência automática.</p>
+    <p class="text-sm text-gray-400">Registo de jogadores e controlo de pagamentos.</p>
   </div>
 
-  <div *ngIf="userPerfil === 'Administrador'" class="bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-4">
-    <h3 class="font-bold text-[#00FF00] text-sm uppercase">Cadastrar Novo Atleta</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <input [(ngModel)]="novoJogador.nome" type="text" placeholder="Nome completo" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
-      <input [(ngModel)]="novoJogador.apelido" type="text" placeholder="Apelido" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
-      <select [(ngModel)]="novoJogador.posicao" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
-        <option value="Goleiro">Goleiro</option>
-        <option value="Zagueiro">Zagueiro</option>
-        <option value="Lateral">Lateral</option>
-        <option value="Volante">Volante</option>
-        <option value="Meia">Meia</option>
-        <option value="Atacante">Atacante</option>
-      </select>
-      <input [(ngModel)]="novoJogador.numeroCamisa" type="number" placeholder="Nº Camisa" class="bg-gray-900 border border-gray-800 p-3 rounded-xl text-sm outline-none text-white focus:border-[#00FF00]">
+  <div *ngIf="!cartolaService.isAdmin" class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center space-x-3 text-blue-400 text-sm font-semibold">
+    <span class="text-xl">👁️</span>
+    <span>Modo Espectador: Estás em modo de leitura. Apenas o Administrador pode adicionar atletas ou alterar mensalidades.</span>
+  </div>
+
+  <div *ngIf="cartolaService.isAdmin" class="bg-[#121824] p-6 rounded-2xl border border-gray-800 shadow-xl">
+    <h3 class="text-sm font-bold text-white mb-4 uppercase tracking-wider text-[#00FF00]">Cadastrar Novo Atleta</h3>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label class="text-xs text-gray-400 block mb-1">Nome do Atleta</label>
+        <input type="text" [(ngModel)]="novoNome" placeholder="Ex: Gabriel Jesus" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00FF00]">
+      </div>
+
+      <div>
+        <label class="text-xs text-gray-400 block mb-1">Posição</label>
+        <select [(ngModel)]="novaPosicao" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00FF00]">
+          <option value="GOL">Goleiro (GOL)</option>
+          <option value="ZAG">Zagueiro (ZAG)</option>
+          <option value="LAT">Lateral (LAT)</option>
+          <option value="MEI">Meia (MEI)</option>
+          <option value="ATA">Atacante (ATA)</option>
+        </select>
+      </div>
+
+      <div class="flex items-end">
+        <button (click)="salvarAtleta()" class="w-full bg-[#00FF00] text-gray-950 font-extrabold py-2.5 rounded-xl hover:opacity-90 transition shadow-md shadow-[#00FF00]/20 cursor-pointer text-sm">
+          + Cadastrar Atleta
+        </button>
+      </div>
     </div>
-    <button (click)="cadastrar()" class="bg-[#00FF00] hover:bg-[#00dd00] text-gray-950 font-extrabold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-[#00FF00]/20 cursor-pointer">
-      Salvar Atleta 💾
-    </button>
   </div>
 
-  <!-- Tabela -->
-  <div class="bg-[#121824] rounded-2xl border border-gray-800 overflow-hidden">
-    <table class="w-full text-left border-collapse">
-      <thead>
-        <tr class="border-b border-gray-800 bg-[#0d131f] text-gray-400 text-xs uppercase">
-          <th class="p-4">Atleta</th>
-          <th class="p-4">Posição</th>
-          <th class="p-4">Camisa</th>
-          <th class="p-4">Nota Cartola</th>
-          <th class="p-4">Mensalidade</th>
-          <th class="p-4 text-right" *ngIf="userPerfil === 'Administrador'">Ações</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-gray-800/60 text-sm">
-        <tr *ngFor="let p of jogadores" class="hover:bg-gray-800/30 transition">
-          <td class="p-4 font-semibold text-white flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-full bg-[#00FF00]/10 text-[#00FF00] flex items-center justify-center font-bold text-xs border border-[#00FF00]/20">
-              {{ p.numeroCamisa }}
-            </div>
-            <div>
-              <p>{{ p.nome }}</p>
-              <span class="text-xs text-gray-500">"{{ p.apelido }}"</span>
-            </div>
-          </td>
-          <td class="p-4 text-gray-300">{{ p.posicao }}</td>
-          <td class="p-4 text-gray-300">#{{ p.numeroCamisa }}</td>
-          <td class="p-4">
-            <span class="font-black text-[#00FF00] bg-[#00FF00]/10 px-2.5 py-1 rounded-lg border border-[#00FF00]/20">
-              ⭐ {{ p.notaGeral }}
-            </span>
-          </td>
-          <td class="p-4">
-            <span [ngClass]="{'text-[#00FF00]': p.statusPagamento === 'Pago', 'text-yellow-400': p.statusPagamento === 'Pendente', 'text-red-400': p.statusPagamento === 'Atrasado'}" class="text-xs font-bold px-2.5 py-1 rounded-full bg-gray-900 border border-gray-800">
-              {{ p.statusPagamento }}
-            </span>
-          </td>
-          <td class="p-4 text-right" *ngIf="userPerfil === 'Administrador'">
-            <button (click)="excluir(p.id)" class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 px-3 py-1.5 rounded-lg border border-red-500/20 transition cursor-pointer">
-              Excluir
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="bg-[#121824] rounded-2xl border border-gray-800 overflow-hidden shadow-xl">
+    <div class="p-4 bg-[#0d131f] border-b border-gray-800 grid grid-cols-12 text-xs font-bold text-gray-400 uppercase tracking-wider">
+      <div class="col-span-5">Nome do Atleta</div>
+      <div class="col-span-3">Posição</div>
+      <div class="col-span-2 text-center">Mensalidade</div>
+      <div class="col-span-2 text-right">Ações</div>
+    </div>
+
+    <div class="divide-y divide-gray-800/60">
+      <div *ngFor="let p of cartolaService.players" class="p-4 grid grid-cols-12 items-center hover:bg-gray-800/30 transition-colors">
+        <div class="col-span-5 font-bold text-white text-sm flex items-center space-x-2">
+          <span>👤</span> <span>{{ p.nome }}</span>
+        </div>
+        <div class="col-span-3">
+          <span class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-300 font-semibold">{{ p.posicao }}</span>
+        </div>
+        <div class="col-span-2 text-center">
+          <button *ngIf="cartolaService.isAdmin" (click)="cartolaService.toggleMensalidade(p.id)" [class]="p.mensalidadePaga ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'" class="px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer">
+            {{ p.mensalidadePaga ? 'PAGO ✅' : 'PENDENTE ⚠️' }}
+          </button>
+          <span *ngIf="!cartolaService.isAdmin" [class]="p.mensalidadePaga ? 'text-emerald-400 font-bold text-xs' : 'text-red-400 font-bold text-xs'">
+            {{ p.mensalidadePaga ? 'PAGO ✅' : 'PENDENTE ⚠️' }}
+          </span>
+        </div>
+        <div class="col-span-2 text-right">
+          <button *ngIf="cartolaService.isAdmin" (click)="cartolaService.deletePlayer(p.id)" class="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer" title="Excluir Atleta">
+            🗑️
+          </button>
+          <span *ngIf="!cartolaService.isAdmin" class="text-xs text-gray-500">—</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

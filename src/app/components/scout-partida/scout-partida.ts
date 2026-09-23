@@ -1,34 +1,55 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CartolaService, Player, PlayerStats } from '../../cartola.service';
+import { FormsModule } from '@angular/forms';
+import { CartolaService, Player } from '../../cartola.service';
 
 @Component({
   selector: 'app-scout-partida',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './scout-partida.html',
   styleUrls: ['./scout-partida.css']
 })
 export class ScoutPartidaComponent {
-  @Input() userPerfil: 'Administrador' | 'Associado' = 'Associado';
-  jogadores: Player[] = [];
+  selectedPlayerId: string = '';
+  selectedPlayer: Player | null = null;
 
-  constructor(public cartolaService: CartolaService) {
-    this.cartolaService.players$.forEach(p => this.jogadores = p);
-    this.jogadores = this.cartolaService.getPlayers();
+  scoutForm = {
+    gols: 0,
+    assistencias: 0,
+    cartoesAmarelos: 0,
+    cartoesVermelhos: 0
+  };
+
+  constructor(public cartolaService: CartolaService) {}
+
+  selecionarAtleta(player: Player): void {
+    this.selectedPlayerId = player.id;
+    this.selectedPlayer = player;
+
+    this.scoutForm = {
+      gols: player.gols,
+      assistencias: player.assistencias,
+      cartoesAmarelos: player.cartoesAmarelos,
+      cartoesVermelhos: player.cartoesVermelhos
+    };
   }
 
-  alterarScout(player: Player, field: keyof PlayerStats, delta: number) {
-    if (this.userPerfil !== 'Administrador') {
-      alert('Apenas administradores podem alterar as estatísticas de scout.');
-      return;
-    }
-    const currentVal = Number(player.estatisticas[field] || 0);
-    const newVal = Math.max(0, currentVal + delta);
-    const updatedStats: PlayerStats = {
-      ...player.estatisticas,
-      [field]: newVal
-    };
-    this.cartolaService.atualizarEstatisticas(player.id, updatedStats);
+  calcularNotaPrevia(): string {
+    let base = 5.0;
+    base += (Number(this.scoutForm.gols) || 0) * 1.5;
+    base += (Number(this.scoutForm.assistencias) || 0) * 1.0;
+    base -= (Number(this.scoutForm.cartoesAmarelos) || 0) * 0.5;
+    base -= (Number(this.scoutForm.cartoesVermelhos) || 0) * 2.0;
+
+    const notaFinal = Math.min(10.0, Math.max(0.0, base));
+    return notaFinal.toFixed(1);
+  }
+
+  salvarScout(): void {
+    if (!this.selectedPlayerId) return;
+
+    this.cartolaService.updateScouts(this.selectedPlayerId, this.scoutForm);
+    alert('Scout e Nota atualizados com sucesso!');
   }
 }
