@@ -23,6 +23,7 @@ export class AppComponent {
   isLoggedIn: boolean = false;
   isRegisterMode: boolean = false;
   loginRole: 'jogador' | 'admin' = 'jogador';
+  
   loginNome: string = '';
   loginAdminEmail: string = '';
   loginCodigoLiga: string = '';
@@ -54,40 +55,73 @@ export class AppComponent {
 
   entrarComCodigo(): void {
     if (!this.lgpdTermosAceito) {
-      this.loginErrorMessage = 'Você precisa aceitar os Termos de Privacidade para continuar.';
+      this.loginErrorMessage = 'Deve aceitar os Termos de Privacidade para continuar.';
       return;
     }
 
-    if (!this.loginCodigoLiga.trim()) {
-      this.loginErrorMessage = 'Informe o código da liga.';
-      return;
+    if (this.loginRole === 'admin') {
+      if (!this.loginAdminEmail.trim() || !this.loginCodigoLiga.trim()) {
+        this.loginErrorMessage = 'Preencha o E-mail e o Código da Liga.';
+        return;
+      }
+
+      const adminValido = this.cartolaService.validarLoginAdmin(this.loginAdminEmail, this.loginCodigoLiga);
+      if (!adminValido) {
+        this.loginErrorMessage = 'E-mail inválido ou incorreto, ou Código de Liga incorreto.';
+        return;
+      }
+
+      this.session = {
+        nome: this.loginAdminEmail,
+        perfil: 'Administrador',
+        codigoLiga: this.loginCodigoLiga.toUpperCase()
+      };
+    } else {
+      if (!this.loginNome.trim() || !this.loginCodigoLiga.trim()) {
+        this.loginErrorMessage = 'Preencha o seu Nome e o Código da Liga.';
+        return;
+      }
+
+      const codigoValido = this.cartolaService.validarCodigoLiga(this.loginCodigoLiga);
+      if (!codigoValido) {
+        this.loginErrorMessage = 'Código de liga inexistente. Utilize um código válido gerado pelo sistema.';
+        return;
+      }
+
+      this.session = {
+        nome: this.loginNome,
+        perfil: 'Atleta',
+        codigoLiga: this.loginCodigoLiga.toUpperCase()
+      };
     }
 
-    this.session = {
-      nome: this.loginRole === 'admin' ? (this.loginAdminEmail || 'Administrador') : (this.loginNome || 'Atleta'),
-      perfil: this.loginRole === 'admin' ? 'Administrador' : 'Atleta',
-      codigoLiga: this.loginCodigoLiga.toUpperCase()
-    };
-
-    this.cartolaService.isAdmin = (this.loginRole === 'admin');
     this.isLoggedIn = true;
     this.loginErrorMessage = '';
   }
 
   cadastrarNovoAdmin(): void {
     if (!this.lgpdTermosAceito) {
-      alert('Você precisa aceitar os Termos de Uso.');
+      alert('Deve aceitar os Termos de Uso e Privacidade.');
       return;
     }
 
     if (!this.regNome.trim() || !this.regEmail.trim()) {
-      alert('Preencha o nome e o e-mail do administrador.');
+      alert('Preencha o Nome e o E-mail.');
       return;
     }
 
-    const randomCode = 'BABA-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-    this.generatedCodigoLiga = randomCode;
-    this.loginCodigoLiga = randomCode;
+    const codigoGerado = this.cartolaService.cadastrarLigaAdmin(this.regNome, this.regEmail);
+    
+    if (!codigoGerado) {
+      alert('E-mail inválido! Digite um endereço de e-mail real (ex: seu-email@gmail.com) para gerar o código.');
+      return;
+    }
+
+    this.generatedCodigoLiga = codigoGerado;
+    this.loginCodigoLiga = codigoGerado;
+    this.loginAdminEmail = this.regEmail.trim();
+
+    alert(`Administrador cadastrado com sucesso!\nO seu código de acesso exclusivo é: ${codigoGerado}`);
   }
 
   logout(): void {
@@ -96,6 +130,7 @@ export class AppComponent {
     this.loginAdminEmail = '';
     this.loginCodigoLiga = '';
     this.lgpdTermosAceito = false;
+    this.generatedCodigoLiga = '';
   }
 
   getTotalArrecadado(): number {
@@ -107,6 +142,6 @@ export class AppComponent {
   }
 
   getRankingJogadores(): any[] {
-    return [...this.cartolaService.players].sort((a, b) => b.nota - a.nota);
+    return this.cartolaService.getPlayersSortedByNota();
   }
 }
