@@ -1,383 +1,235 @@
-<!-- VÍDEO DE FUNDO CONTINUO GLOBAL -->
 <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
   <video
     src="champions-intro.mp4"
     autoplay
     loop
-    muted
     [muted]="true"
     playsinline
-    class="w-full h-full object-cover opacity-65 filter brightness-110 contrast-110">
+    class="w-full h-full object-cover opacity-60 filter brightness-105 contrast-110">
   </video>
-  
-  <div class="absolute inset-0 bg-gradient-to-b from-[#020817]/30 via-[#030d26]/40 to-[#020817]/65"></div>
+  <div class="absolute inset-0 bg-gradient-to-tr from-[#020817]/80 via-[#030d26]/65 to-[#020817]/75"></div>
 </div>
 
-<div class="relative z-10 w-full min-h-screen">
+<div *ngIf="!isLoggedIn" class="login-wrapper">
+  <div class="login-card">
+    <div class="brand-header">
+      <span class="system-badge">PLATAFORMA DE GESTÃO</span>
+      <h2>Baba dos Campeões</h2>
+      <p class="subtitle">Gestão de estatísticas, pontuações e classificações da liga.</p>
+    </div>
 
-  <div *ngIf="isLoggedIn" class="min-h-screen flex text-gray-100 font-sans w-full overflow-hidden">
-    <aside class="w-64 bg-[#050e24]/90 backdrop-blur-md border-r border-cyan-900/40 flex flex-col justify-between hidden md:flex shrink-0">
-      <div>
-        <div class="p-6 flex items-center space-x-3 border-b border-cyan-900/40">
-          <span class="text-2xl">⭐</span>
-          <div>
-            <h1 class="font-extrabold text-sm tracking-widest text-cyan-400">BABA DOS CAMPEÕES</h1>
-            <span class="text-[10px] text-cyan-200/60 uppercase font-mono">Liga: {{ session.codigoLiga }}</span>
-          </div>
-        </div>
+    <div class="tab-selector">
+      <button type="button" [class.active]="!isRegisterMode" (click)="isRegisterMode = false; loginErrorMessage = ''">
+        Entrar na Liga
+      </button>
+      <button type="button" [class.active]="isRegisterMode" (click)="isRegisterMode = true; loginErrorMessage = ''">
+        Nova Liga ADM
+      </button>
+    </div>
 
-        <div class="px-4 pt-4">
-          <div *ngIf="cartolaService.isAdmin" class="bg-amber-500/10 border border-amber-500/30 text-amber-300 rounded-xl p-2.5 text-center text-xs font-bold">
-            👑 MODO ADM (Edição)
-          </div>
-          <div *ngIf="!cartolaService.isAdmin" class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 rounded-xl p-2.5 text-center text-xs font-bold">
-            👁️ MODO ESPECTADOR
-          </div>
-        </div>
-
-        <nav class="p-4 space-y-1.5">
-          <button (click)="switchTab('dashboard')" [ngClass]="currentTab === 'dashboard' ? 'bg-cyan-500 text-gray-950 font-bold shadow-lg shadow-cyan-500/30' : 'text-gray-300 hover:bg-cyan-950/40 hover:text-white'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer">
-            <span>📊</span><span>Dashboard</span>
-          </button>
-
-          <button (click)="switchTab('atletas')" [ngClass]="currentTab === 'atletas' ? 'bg-cyan-500 text-gray-950 font-bold shadow-lg shadow-cyan-500/30' : 'text-gray-300 hover:bg-cyan-950/40 hover:text-white'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer">
-            <span>👥</span><span>Atletas</span>
-          </button>
-
-          <button (click)="switchTab('scout')" [ngClass]="currentTab === 'scout' ? 'bg-cyan-500 text-gray-950 font-bold shadow-lg shadow-cyan-500/30' : 'text-gray-300 hover:bg-cyan-950/40 hover:text-white'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer">
-            <span>⭐</span><span>Scout & Notas</span>
-          </button>
-
-          <button (click)="switchTab('sorteio')" [ngClass]="currentTab === 'sorteio' ? 'bg-cyan-500 text-gray-950 font-bold shadow-lg shadow-cyan-500/30' : 'text-gray-300 hover:bg-cyan-950/40 hover:text-white'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer">
-            <span>🎲</span><span>Sorteio Times</span>
-          </button>
-
-          <button (click)="switchTab('cartola')" [ngClass]="currentTab === 'cartola' ? 'bg-cyan-500 text-gray-950 font-bold shadow-lg shadow-cyan-500/30' : 'text-gray-300 hover:bg-cyan-950/40 hover:text-white'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer">
-            <span>🏆</span><span>Ranking Geral</span>
-          </button>
-
-          <button (click)="switchTab('banca')" [ngClass]="currentTab === 'banca' ? 'bg-blue-600 text-white font-bold shadow-lg shadow-blue-600/30' : 'text-cyan-300 hover:bg-cyan-950/40 hover:text-cyan-200'" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-sm cursor-pointer border border-cyan-500/30">
-            <span>🎓</span><span>Projeto & Banca</span>
-          </button>
-        </nav>
-      </div>
-
-      <div class="p-4 border-t border-cyan-900/40 flex items-center justify-between bg-[#030919]/80">
-        <div class="flex items-center space-x-3 overflow-hidden">
-          <div class="w-10 h-10 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 flex shrink-0 items-center justify-center font-bold text-sm">
-            {{ session?.nome?.substring(0, 2)?.toUpperCase() }}
-          </div>
-          <div class="overflow-hidden">
-            <p class="text-sm font-semibold truncate text-white">{{ session?.nome }}</p>
-            <p class="text-[10px] text-cyan-200/60 truncate">{{ session?.perfil }}</p>
-          </div>
-        </div>
-        <button (click)="logout()" class="p-2 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg transition-colors cursor-pointer" title="Sair">
-          🚪
+    <div *ngIf="!isRegisterMode" class="form-body">
+      <div class="role-selector">
+        <button type="button" [class.selected]="loginRole === 'jogador'" (click)="loginRole = 'jogador'">
+          Atleta
+        </button>
+        <button type="button" [class.selected]="loginRole === 'admin'" (click)="loginRole = 'admin'">
+          Administrador
         </button>
       </div>
-    </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative">
-      <header class="bg-[#050e24]/90 border-b border-cyan-900/40 p-4 flex justify-between items-center md:hidden">
-        <span class="font-bold text-cyan-400">Baba dos Campeões ({{ session.codigoLiga }})</span>
-        <button (click)="logout()" class="text-red-400 text-xs font-semibold px-2 py-1 bg-red-500/10 rounded">Sair</button>
-      </header>
-
-      <div class="p-6 md:p-10 flex-1 max-w-7xl w-full mx-auto space-y-8 pb-24">
-        
-        <section *ngIf="currentTab === 'dashboard'" class="space-y-6">
-          <div>
-            <h2 class="text-2xl font-black text-white">Painel da Liga</h2>
-            <p class="text-sm text-cyan-200/70">Visão estatística oficial do Baba dos Campeões.</p>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-6 rounded-2xl border border-cyan-900/50 shadow-xl">
-              <p class="text-cyan-200/60 text-xs font-semibold uppercase">Total de Atletas</p>
-              <h3 class="text-3xl font-black text-white mt-2">{{ cartolaService.players.length }}</h3>
-              <span class="text-[10px] text-cyan-400 mt-1 block">⭐ Plantel ativo</span>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-6 rounded-2xl border border-cyan-900/50 shadow-xl">
-              <p class="text-cyan-200/60 text-xs font-semibold uppercase">Caixa Arrecadado</p>
-              <h3 class="text-3xl font-black text-cyan-400 mt-2">R$ {{ getTotalArrecadado().toFixed(2) }}</h3>
-              <span class="text-[10px] text-cyan-200/60 mt-1 block">💵 Arrecadação mensal</span>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-6 rounded-2xl border border-cyan-900/50 shadow-xl">
-              <p class="text-cyan-200/60 text-xs font-semibold uppercase">Mensalidades em Dia</p>
-              <h3 class="text-3xl font-black text-white mt-2">{{ cartolaService.players.length - getInadimplenciaCount() }}</h3>
-              <span class="text-[10px] text-cyan-400 mt-1 block">✅ Adimplentes</span>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-6 rounded-2xl border border-cyan-900/50 shadow-xl">
-              <p class="text-cyan-200/60 text-xs font-semibold uppercase">Pendentes</p>
-              <h3 class="text-3xl font-black text-red-400 mt-2">{{ getInadimplenciaCount() }}</h3>
-              <span class="text-[10px] text-red-400 mt-1 block">⚠️ Em aberto</span>
-            </div>
-          </div>
-        </section>
-
-        <app-cadastro-jogador *ngIf="currentTab === 'atletas'"></app-cadastro-jogador>
-        <app-scout-partida *ngIf="currentTab === 'scout'"></app-scout-partida>
-        <app-sorteio-times *ngIf="currentTab === 'sorteio'"></app-sorteio-times>
-
-        <section *ngIf="currentTab === 'cartola'" class="space-y-6">
-          <div>
-            <h2 class="text-2xl font-black text-white flex items-center space-x-2">
-              <span>🏆</span><span>Ranking Oficial dos Campeões</span>
-            </h2>
-            <p class="text-sm text-cyan-200/70">Classificação ponderada dos atletas de 0.0 a 10.0.</p>
-          </div>
-
-          <div class="bg-[#08132e]/80 backdrop-blur-md rounded-2xl border border-cyan-900/50 overflow-hidden shadow-2xl">
-            <div class="p-4 bg-[#050e24]/90 border-b border-cyan-900/50 grid grid-cols-12 text-xs font-bold text-cyan-300 uppercase tracking-wider">
-              <div class="col-span-1 text-center">#</div>
-              <div class="col-span-4">Atleta / Posição</div>
-              <div class="col-span-1 text-center">Gols</div>
-              <div class="col-span-1 text-center">Assis.</div>
-              <div class="col-span-1 text-center">🟨</div>
-              <div class="col-span-1 text-center">🟥</div>
-              <div class="col-span-1 text-center">Status</div>
-              <div class="col-span-2 text-right pr-2">Nota</div>
-            </div>
-
-            <div class="divide-y divide-cyan-900/30">
-              <div *ngFor="let jogador of getRankingJogadores(); let i = index" class="p-4 grid grid-cols-12 items-center hover:bg-cyan-950/30 transition-colors">
-                <div class="col-span-1 text-center font-black" [ngClass]="i === 0 ? 'text-yellow-400 text-lg' : i === 1 ? 'text-slate-300' : i === 2 ? 'text-amber-600' : 'text-cyan-200/60'">
-                  {{ i + 1 }}º
-                </div>
-                <div class="col-span-4">
-                  <p class="font-bold text-white text-sm">{{ jogador.nome }}</p>
-                  <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800/40 text-cyan-300 font-medium">{{ jogador.posicao }}</span>
-                </div>
-                <div class="col-span-1 text-center font-semibold text-gray-300">⚽ {{ jogador.gols }}</div>
-                <div class="col-span-1 text-center font-semibold text-gray-300">👟 {{ jogador.assistencias }}</div>
-                <div class="col-span-1 text-center font-semibold text-amber-400">{{ jogador.cartoesAmarelos }}</div>
-                <div class="col-span-1 text-center font-semibold text-red-500">{{ jogador.cartoesVermelhos }}</div>
-                <div class="col-span-1 text-center">
-                  <span [class]="jogador.mensalidadePaga ? 'bg-cyan-500/20 text-cyan-300 text-[10px] px-2 py-1 rounded font-bold' : 'bg-red-500/20 text-red-400 text-[10px] px-2 py-1 rounded font-bold'">
-                    {{ jogador.mensalidadePaga ? 'PAGO' : 'PEND' }}
-                  </span>
-                </div>
-                <div class="col-span-2 text-right pr-2">
-                  <span class="bg-cyan-400 text-gray-950 font-black px-3 py-1.5 rounded-full text-sm inline-block shadow-md shadow-cyan-400/20">
-                    {{ jogador.nota.toFixed(1) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section *ngIf="currentTab === 'banca'" class="space-y-6">
-          <div class="border-b border-cyan-900/50 pb-4">
-            <span class="bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-bold text-xs px-3 py-1 rounded-full uppercase">Documentação do Projeto</span>
-            <h2 class="text-3xl font-black text-white mt-2">Síntese do Desafio Final — Trilha Front-End</h2>
-            <p class="text-sm text-cyan-200/70 mt-1">Fundamentação técnica e conteúdos formativos aplicados no Baba dos Campeões.</p>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">📐</div>
-              <h3 class="font-bold text-white text-base">Fundamentos Matemáticos</h3>
-              <p class="text-xs text-cyan-200/70">Fórmula de nota ponderada com limites no intervalo [0.0, 10.0]:</p>
-              <p class="text-[11px] font-mono text-cyan-400 bg-[#030919] p-2 rounded border border-cyan-900/50">
-                Nota = min(10, max(0, 5.0 + 1.5G + 1.0A - 0.5CA - 2.0CV))
-              </p>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">⚡</div>
-              <h3 class="font-bold text-white text-base">Angular & TypeScript</h3>
-              <p class="text-xs text-cyan-200/70">Arquitetura de Standalone Components, serviços injetáveis (`CartolaService`), formulários reativos e controle de estado em memória.</p>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">🛡️</div>
-              <h3 class="font-bold text-white text-base">Conformidade LGPD</h3>
-              <p class="text-xs text-cyan-200/70">Consentimento explícito por checkbox na entrada e armazenamento estritamente local (`localStorage`).</p>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">🔄</div>
-              <h3 class="font-bold text-white text-base">Git & Scrum</h3>
-              <p class="text-xs text-cyan-200/70">Sprints de desenvolvimento (Gestão, Scout, Sorteio, Ranking) e histórico de commits com convenção semântica no GitHub.</p>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">🌐</div>
-              <h3 class="font-bold text-white text-base">Inglês Técnico</h3>
-              <p class="text-xs text-cyan-200/70">Convenções padrão da indústria: <i>Dashboard, Standalone Components, Services, LocalStorage, Clean Code, Git Repository</i>.</p>
-            </div>
-
-            <div class="bg-[#08132e]/80 backdrop-blur-md p-5 rounded-2xl border border-cyan-900/50 space-y-2">
-              <div class="text-2xl">🎨</div>
-              <h3 class="font-bold text-white text-base">HTML & Tailwind CSS</h3>
-              <p class="text-xs text-cyan-200/70">Design adaptativo com Flexbox e Grid System, estética inspirada na Champions League e interatividade fluida.</p>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <div *ngIf="!isLoggedIn" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <div class="relative w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 bg-[#08132e]/90 backdrop-blur-xl border border-cyan-500/30 rounded-3xl overflow-hidden shadow-2xl shadow-cyan-500/20 z-10">
-      
-      <div class="p-8 bg-gradient-to-br from-[#030919]/90 via-[#061230]/90 to-[#020817]/90 border-b md:border-b-0 md:border-r border-cyan-900/50 flex flex-col justify-between">
-        <div>
-          <div class="flex items-center space-x-2 text-cyan-400 font-black tracking-widest text-xs uppercase mb-4">
-            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            <span>UEFA Champions League Theme</span>
-          </div>
-          <h1 class="text-3xl font-black text-white leading-tight tracking-tight">
-            BABA DOS <span class="text-cyan-400">CAMPEÕES</span>
-          </h1>
-          <p class="text-xs text-cyan-100/70 mt-2 leading-relaxed">
-            Gestão oficial de peladas: notas de performance de 0 a 10, sorteio de equipas e controlo de mensalidades em conformidade com a LGPD.
-          </p>
-        </div>
-
-        <div class="space-y-3 my-6">
-          <div class="bg-[#030919]/80 p-3 rounded-2xl border border-cyan-900/50 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <span class="text-2xl">👑</span>
-              <div>
-                <p class="text-xs font-bold text-white">Administrador</p>
-                <p class="text-[10px] text-cyan-200/60">Gere atletas, scouts e notas</p>
-              </div>
-            </div>
-            <span class="text-[10px] font-bold text-amber-300 bg-amber-500/10 px-2 py-1 rounded">EDIÇÃO</span>
-          </div>
-
-          <div class="bg-[#030919]/80 p-3 rounded-2xl border border-cyan-900/50 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-              <span class="text-2xl">👁️</span>
-              <div>
-                <p class="text-xs font-bold text-white">Atleta / Jogador</p>
-                <p class="text-[10px] text-cyan-200/60">Acompanha o ranking e times</p>
-              </div>
-            </div>
-            <span class="text-[10px] font-bold text-cyan-300 bg-cyan-500/10 px-2 py-1 rounded">LEITURA</span>
-          </div>
-        </div>
-
-        <div class="text-[10px] text-cyan-200/50 border-t border-cyan-900/50 pt-3 flex justify-between">
-          <span>Champions Edition</span>
-          <span>LGPD Compliant 🛡️</span>
-        </div>
+      <div *ngIf="loginRole === 'jogador'" class="input-group">
+        <label>Nome do Atleta</label>
+        <input type="text" [(ngModel)]="loginNome" placeholder="Ex: Matheus Ferreira">
       </div>
 
-      <div class="p-8 flex flex-col justify-center bg-[#08132e]/90">
-        
-        <div class="flex border-b border-cyan-900/50 mb-6">
-          <button (click)="isRegisterMode = false" [ngClass]="!isRegisterMode ? 'text-cyan-400 border-b-2 border-cyan-400 font-black' : 'text-gray-400 hover:text-white'" class="pb-3 text-xs uppercase tracking-wider font-bold w-1/2 text-center transition cursor-pointer">
-            🔑 Entrar na Liga
-          </button>
-          <button (click)="isRegisterMode = true" [ngClass]="isRegisterMode ? 'text-cyan-400 border-b-2 border-cyan-400 font-black' : 'text-gray-400 hover:text-white'" class="pb-3 text-xs uppercase tracking-wider font-bold w-1/2 text-center transition cursor-pointer">
-            ✨ Nova Liga ADM
-          </button>
-        </div>
+      <div *ngIf="loginRole === 'admin'" class="input-group">
+        <label>E-mail do Administrador</label>
+        <input type="email" [(ngModel)]="loginAdminEmail" placeholder="admin@liga.com">
+      </div>
 
-        <div *ngIf="!isRegisterMode" class="space-y-4">
-          <div class="grid grid-cols-2 gap-2 bg-[#030919] p-1 rounded-xl border border-cyan-900/50 mb-4">
-            <button (click)="loginRole = 'jogador'" [ngClass]="loginRole === 'jogador' ? 'bg-cyan-500 text-gray-950 font-black' : 'text-gray-400 hover:text-white'" class="py-2 text-xs rounded-lg transition font-bold flex items-center justify-center space-x-1 cursor-pointer">
-              <span>👤</span> <span>Atleta</span>
-            </button>
-            <button (click)="loginRole = 'admin'" [ngClass]="loginRole === 'admin' ? 'bg-cyan-500 text-gray-950 font-black' : 'text-gray-400 hover:text-white'" class="py-2 text-xs rounded-lg transition font-bold flex items-center justify-center space-x-1 cursor-pointer">
-              <span>👑</span> <span>ADM</span>
-            </button>
-          </div>
+      <div class="input-group">
+        <label>Código da Liga</label>
+        <input type="text" [(ngModel)]="loginCodigoLiga" placeholder="Ex: BABA-2026" class="uppercase-input">
+      </div>
 
-          <div *ngIf="loginRole === 'jogador'" class="space-y-3">
-            <div>
-              <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Teu Nome / Apelido</label>
-              <input type="text" [(ngModel)]="loginNome" placeholder="Ex: Matheus" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
-            </div>
-            <div>
-              <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Código da Liga</label>
-              <input type="text" [(ngModel)]="loginCodigoLiga" placeholder="Ex: BABA-2026" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white uppercase font-bold text-cyan-400 focus:outline-none focus:border-cyan-400">
-            </div>
-          </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="lgpdCheck" [(ngModel)]="lgpdTermosAceito">
+        <label for="lgpdCheck">Concordo com os <a href="#">Termos de Privacidade</a> para o processamento de dados.</label>
+      </div>
 
-          <div *ngIf="loginRole === 'admin'" class="space-y-3">
-            <div>
-              <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Email do Administrador</label>
-              <input type="email" [(ngModel)]="loginAdminEmail" placeholder="admin@baba.com" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
-            </div>
-            <div>
-              <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Código de Liga do ADM</label>
-              <input type="text" [(ngModel)]="loginCodigoLiga" placeholder="Ex: BABA-2026" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white uppercase font-bold text-cyan-400 focus:outline-none focus:border-cyan-400">
-            </div>
-          </div>
+      <div *ngIf="loginErrorMessage" class="error-alert">
+        {{ loginErrorMessage }}
+      </div>
 
-          <div *ngIf="loginErrorMessage" class="p-3 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-xs font-semibold">
-            {{ loginErrorMessage }}
-          </div>
+      <button type="button" class="btn-primary" (click)="entrarComCodigo()">
+        {{ loginRole === 'admin' ? 'Entrar no Painel de Controle' : 'Entrar na Liga' }}
+      </button>
+    </div>
 
-          <button (click)="entrarComCodigo()"
-                  [disabled]="!lgpdTermosAceito"
-                  [ngClass]="lgpdTermosAceito ? 'hover:opacity-90 cursor-pointer shadow-lg shadow-cyan-500/30' : 'opacity-50 cursor-not-allowed'"
-                  class="w-full bg-cyan-400 text-gray-950 font-black py-3.5 rounded-xl transition text-sm uppercase mt-2">
-            🚀 Entrar como {{ loginRole === 'admin' ? 'ADM' : 'Atleta' }}
-          </button>
+    <div *ngIf="isRegisterMode" class="form-body">
+      <div class="input-group">
+        <label>Nome do Administrador</label>
+        <input type="text" [(ngModel)]="regNome" placeholder="Seu nome completo">
+      </div>
 
-          <div class="flex items-start space-x-2.5 pt-2">
-            <input
-              type="checkbox"
-              id="lgpdCheck"
-              [(ngModel)]="lgpdTermosAceito"
-              class="mt-0.5 w-4 h-4 rounded border-cyan-800 bg-[#030919] text-cyan-400 focus:ring-cyan-400 cursor-pointer accent-cyan-400"
-            >
-            <label for="lgpdCheck" class="text-[11px] text-cyan-200/70 cursor-pointer select-none leading-snug">
-              Concordo com os <span class="text-cyan-300 font-semibold underline">Termos e Condições da LGPD</span> para uso e armazenamento dos meus dados locais na liga.
-            </label>
-          </div>
-        </div>
+      <div class="input-group">
+        <label>E-mail Principal</label>
+        <input type="email" [(ngModel)]="regEmail" placeholder="seuemail@exemplo.com">
+      </div>
 
-        <div *ngIf="isRegisterMode" class="space-y-4">
-          <div>
-            <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Nome do Administrador</label>
-            <input type="text" [(ngModel)]="regNome" placeholder="Ex: Matheus Oliveira" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
-          </div>
+      <div class="checkbox-group">
+        <input type="checkbox" id="lgpdRegCheck" [(ngModel)]="lgpdTermosAceito">
+        <label for="lgpdRegCheck">Concordo com os <a href="#">Termos de Uso</a>.</label>
+      </div>
 
-          <div>
-            <label class="text-xs text-cyan-200/70 font-semibold block mb-1">Email do Administrador</label>
-            <input type="email" [(ngModel)]="regEmail" placeholder="admin@baba.com" class="w-full bg-[#030919] border border-cyan-900/60 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400">
-          </div>
+      <button type="button" class="btn-primary" (click)="cadastrarNovoAdmin()">
+        Gerar Liga e Chave de Acesso
+      </button>
 
-          <button (click)="cadastrarNovoAdmin()"
-                  [disabled]="!lgpdTermosAceito"
-                  [ngClass]="lgpdTermosAceito ? 'hover:opacity-90 cursor-pointer shadow-lg shadow-cyan-500/30' : 'opacity-50 cursor-not-allowed'"
-                  class="w-full bg-cyan-400 text-gray-950 font-black py-3.5 rounded-xl transition text-sm uppercase">
-            ⚡ Criar Liga & Gerar Código ADM
-          </button>
-
-          <div class="flex items-start space-x-2.5 pt-1">
-            <input
-              type="checkbox"
-              id="lgpdCheckReg"
-              [(ngModel)]="lgpdTermosAceito"
-              class="mt-0.5 w-4 h-4 rounded border-cyan-800 bg-[#030919] text-cyan-400 focus:ring-cyan-400 cursor-pointer accent-cyan-400"
-            >
-            <label for="lgpdCheckReg" class="text-[11px] text-cyan-200/70 cursor-pointer select-none leading-snug">
-              Concordo com os <span class="text-cyan-300 font-semibold underline">Termos e Condições da LGPD</span> para armazenamento de dados locais.
-            </label>
-          </div>
-
-          <div *ngIf="generatedCodigoLiga" class="p-4 bg-cyan-500/10 border border-cyan-500/30 rounded-2xl text-center space-y-2 mt-3">
-            <p class="text-xs text-cyan-300 font-bold">Liga criada com sucesso!</p>
-            <p class="text-2xl font-black text-white tracking-widest bg-[#030919] py-2 rounded-xl border border-cyan-500/50">
-              {{ generatedCodigoLiga }}
-            </p>
-            <p class="text-[10px] text-cyan-200/70">Compartilhe este código com os seus atletas para entrarem na liga.</p>
-          </div>
-        </div>
-
+      <div *ngIf="generatedCodigoLiga" class="success-box">
+        <span class="success-title">Liga criada com sucesso</span>
+        <p>Código de acesso gerado: <strong>{{ generatedCodigoLiga }}</strong></p>
       </div>
     </div>
   </div>
+</div>
 
+<div *ngIf="isLoggedIn" class="dashboard-layout">
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="sidebar-brand" *ngIf="!isSidebarCollapsed">
+        <div class="brand-title">BABA DOS CAMPEÕES</div>
+        <div class="brand-code">LIGA: {{ session.codigoLiga }}</div>
+      </div>
+      
+      <button 
+        type="button" 
+        class="btn-toggle-sidebar" 
+        (click)="toggleSidebar()" 
+        [attr.title]="isSidebarCollapsed ? 'Expandir Menu' : 'Recolher Menu'">
+        <svg *ngIf="!isSidebarCollapsed" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        <svg *ngIf="isSidebarCollapsed" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <div class="user-role-badge" [class.admin-badge]="cartolaService.isAdmin" *ngIf="!isSidebarCollapsed">
+      {{ cartolaService.isAdmin ? 'Modo Edição' : 'Modo Leitura' }}
+    </div>
+
+    <nav class="sidebar-nav">
+      <button [class.active]="currentTab === 'dashboard'" (click)="switchTab('dashboard')" [attr.title]="isSidebarCollapsed ? 'Painel Principal' : null">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        </span>
+        <span class="nav-label" *ngIf="!isSidebarCollapsed">Painel Principal</span>
+      </button>
+
+      <button [class.active]="currentTab === 'atletas'" (click)="switchTab('atletas')" [attr.title]="isSidebarCollapsed ? 'Atletas & Elenco' : null">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <span class="nav-label" *ngIf="!isSidebarCollapsed">Atletas & Elenco</span>
+      </button>
+
+      <button [class.active]="currentTab === 'scout'" (click)="switchTab('scout')" [attr.title]="isSidebarCollapsed ? 'Scouts & Notas' : null">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+        </span>
+        <span class="nav-label" *ngIf="!isSidebarCollapsed">Scouts & Notas</span>
+      </button>
+
+      <button [class.active]="currentTab === 'sorteio'" (click)="switchTab('sorteio')" [attr.title]="isSidebarCollapsed ? 'Sorteio de Times' : null">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.5-.6-3.3-1.7l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>
+        </span>
+        <span class="nav-label" *ngIf="!isSidebarCollapsed">Sorteio de Times</span>
+      </button>
+
+      <button [class.active]="currentTab === 'ranking'" (click)="switchTab('ranking')" [attr.title]="isSidebarCollapsed ? 'Classificação Geral' : null">
+        <span class="nav-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="18" y1="20" y2="10"/><line x1="12" x2="12" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="14"/></svg>
+        </span>
+        <span class="nav-label" *ngIf="!isSidebarCollapsed">Classificação Geral</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info" *ngIf="!isSidebarCollapsed">
+        <span class="user-name">{{ session.nome }}</span>
+        <span class="user-perfil">{{ session.perfil }}</span>
+      </div>
+      <button class="btn-logout" (click)="logout()" [attr.title]="isSidebarCollapsed ? 'Sair' : null">
+        <span *ngIf="!isSidebarCollapsed">Sair</span>
+        <span *ngIf="isSidebarCollapsed">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+        </span>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div *ngIf="currentTab === 'dashboard'" class="tab-content">
+      <div class="page-header">
+        <h2>Painel Principal</h2>
+        <p class="page-desc">Resumo de métricas gerais da temporada ativa.</p>
+      </div>
+
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-label">Atletas Registrados</span>
+          <span class="metric-value">{{ cartolaService.players.length }}</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Arrecadação Prevista</span>
+          <span class="metric-value">R$ {{ getTotalArrecadado().toFixed(2) }}</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-label">Pendências Financ.</span>
+          <span class="metric-value">{{ getInadimplenciaCount() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <app-cadastro-jogador *ngIf="currentTab === 'atletas'"></app-cadastro-jogador>
+    <app-scout-partida *ngIf="currentTab === 'scout'"></app-scout-partida>
+    <app-sorteio-times *ngIf="currentTab === 'sorteio'"></app-sorteio-times>
+
+    <div *ngIf="currentTab === 'ranking'" class="tab-content">
+      <div class="page-header">
+        <h2>Classificação Geral</h2>
+        <p class="page-desc">Ordenação automática por desempenho estatístico individual.</p>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 60px;">Pos</th>
+              <th>Atleta</th>
+              <th>Posição</th>
+              <th class="text-center">Gols</th>
+              <th class="text-center">Assist.</th>
+              <th class="text-center">Status</th>
+              <th class="text-right">Nota</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let player of getRankingJogadores(); let i = index">
+              <td class="pos-cell">{{ i + 1 }}º</td>
+              <td class="player-name">{{ player.nome }}</td>
+              <td><span class="pos-badge">{{ player.posicao }}</span></td>
+              <td class="text-center">{{ player.gols }}</td>
+              <td class="text-center">{{ player.assistencias }}</td>
+              <td class="text-center">
+                <span class="status-badge" [class.paid]="player.mensalidadePaga">
+                  {{ player.mensalidadePaga ? 'Pago' : 'Pendente' }}
+                </span>
+              </td>
+              <td class="text-right"><span class="score-pill">{{ player.nota }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 </div>

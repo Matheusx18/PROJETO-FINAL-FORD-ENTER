@@ -11,49 +11,52 @@ import { CartolaService, Player } from '../../cartola.service';
   styleUrls: ['./sorteio-times.css']
 })
 export class SorteioTimesComponent {
-  selectedPlayers: { [key: string]: boolean } = {};
   numTimes: number = 2;
-  timesGerados: { nome: string; jogadores: Player[]; mediaNota: number }[] = [];
+  timesSorteados: Player[][] = [];
 
-  constructor(public cartolaService: CartolaService) {
-    this.cartolaService.players.forEach(p => {
-      this.selectedPlayers[p.id] = true;
-    });
-  }
+  constructor(public cartolaService: CartolaService) {}
 
-  private shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  sortear(): void {
-    const presentes = this.cartolaService.players.filter(p => this.selectedPlayers[p.id]);
+  sortearEquipas(): void {
+    const presentes = this.cartolaService.players.filter(p => p.presente);
     if (presentes.length < this.numTimes) {
-      alert(`Tens de selecionar pelo menos ${this.numTimes} jogadores para fazer o sorteio.`);
+      alert('Não há jogadores suficientes selecionados para formar os times.');
       return;
     }
 
-    const embaralhados = this.shuffleArray(presentes);
+    const jogEmbaralhados = [...presentes];
+    for (let i = jogEmbaralhados.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [jogEmbaralhados[i], jogEmbaralhados[j]] = [jogEmbaralhados[j], jogEmbaralhados[i]];
+    }
 
-    const equipas: { nome: string; jogadores: Player[]; mediaNota: number }[] = Array.from(
-      { length: this.numTimes },
-      (_, i) => ({ nome: `Time ${String.fromCharCode(65 + i)}`, jogadores: [], mediaNota: 0 })
-    );
+    jogEmbaralhados.sort((a, b) => b.nota - a.nota);
 
-    embaralhados.forEach((jogador, index) => {
-      const idxEquipa = index % this.numTimes;
-      equipas[idxEquipa].jogadores.push(jogador);
+    const times: Player[][] = Array.from({ length: Number(this.numTimes) }, () => []);
+
+    jogEmbaralhados.forEach(jogador => {
+      let menorTimeIndex = 0;
+      let menorSoma = Infinity;
+
+      const timeIndices = Array.from({ length: Number(this.numTimes) }, (_, idx) => idx)
+        .sort(() => Math.random() - 0.5);
+
+      timeIndices.forEach(idx => {
+        const somaAtual = times[idx].reduce((acc, p) => acc + p.nota, 0);
+        if (somaAtual < menorSoma) {
+          menorSoma = somaAtual;
+          menorTimeIndex = idx;
+        }
+      });
+
+      times[menorTimeIndex].push(jogador);
     });
 
-    equipas.forEach(eq => {
-      const soma = eq.jogadores.reduce((acc, j) => acc + j.nota, 0);
-      eq.mediaNota = Number((soma / eq.jogadores.length).toFixed(1));
-    });
+    this.timesSorteados = times;
+  }
 
-    this.timesGerados = equipas;
+  getMediaTime(time: Player[]): string {
+    if (time.length === 0) return '0.0';
+    const soma = time.reduce((acc, p) => acc + p.nota, 0);
+    return (soma / time.length).toFixed(1);
   }
 }

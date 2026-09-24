@@ -1,66 +1,58 @@
-<div class="space-y-6">
-  <div>
-    <h2 class="text-2xl font-black text-white">Scout & Registo de Estatísticas</h2>
-    <p class="text-sm text-gray-400">Estatísticas dos atletas e cálculo automático da nota (Máx: 10.0).</p>
+<div class="component-container">
+  <div class="page-header">
+    <h2>Scout & Registro de Estatísticas</h2>
+    <p class="page-desc">Selecione um atleta para registrar os dados da partida e atualizar a nota (Máx: 10.0).</p>
   </div>
 
-  <div *ngIf="!cartolaService.isAdmin" class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center space-x-3 text-blue-400 text-sm font-semibold">
-    <span class="text-xl">👁️</span>
-    <span>Modo Espectador: Apenas o Administrador pode registar scouts e alterar notas.</span>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <div class="bg-[#121824] p-5 rounded-2xl border border-gray-800 space-y-3">
-      <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Selecionar Atleta</h3>
-      <div class="space-y-2 max-h-96 overflow-y-auto pr-1">
-        <button *ngFor="let p of cartolaService.players" (click)="selecionarAtleta(p)" [ngClass]="selectedPlayerId === p.id ? 'bg-[#00FF00]/10 border-[#00FF00] text-white' : 'bg-[#0d131f] border-gray-800/80 text-gray-400 hover:bg-gray-800/50'" class="w-full p-3 rounded-xl border text-left flex justify-between items-center transition cursor-pointer">
-          <div>
-            <p class="font-bold text-sm">{{ p.nome }}</p>
-            <span class="text-[10px] text-gray-500">{{ p.posicao }}</span>
+  <div class="scout-grid">
+    <div class="card-box players-list">
+      <span class="section-title">Selecionar Atleta</span>
+      <div class="player-cards-container">
+        <div 
+          *ngFor="let player of cartolaService.players"
+          class="player-select-card"
+          [class.selected]="selectedPlayer?.id === player.id"
+          (click)="selectPlayer(player)">
+          <div class="player-details">
+            <span class="player-name">{{ player.nome }}</span>
+            <span class="pos-badge">{{ player.posicao }}</span>
           </div>
-          <span class="font-extrabold text-sm text-[#00FF00]">{{ p.nota.toFixed(1) }} pts</span>
-        </button>
+          <span class="score-pill">{{ player.nota }}</span>
+        </div>
       </div>
     </div>
 
-    <div *ngIf="selectedPlayer" class="lg:col-span-2 bg-[#121824] p-6 rounded-2xl border border-gray-800 space-y-6">
-      <div class="flex justify-between items-center border-b border-gray-800 pb-4">
-        <div>
-          <h3 class="text-lg font-black text-white">{{ selectedPlayer.nome }}</h3>
-          <span class="text-xs text-gray-400">Estatísticas para cálculo de nota</span>
-        </div>
-        <span class="bg-[#00FF00] text-gray-950 font-black px-4 py-1.5 rounded-full text-base">
-          Nota: {{ calcularNotaPrevia() }} / 10.0
-        </span>
+    <div class="card-box scout-panel" *ngIf="selectedPlayer">
+      <div class="scout-header">
+        <h3>Atualizar Scout: <span class="text-accent">{{ selectedPlayer.nome }}</span></h3>
       </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label class="text-xs text-gray-400 font-semibold block mb-1">Gols (⚽ +1.5 pts)</label>
-          <input type="number" min="0" [disabled]="!cartolaService.isAdmin" [(ngModel)]="scoutForm.gols" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF00] disabled:opacity-50">
+      
+      <div class="scout-stats-grid">
+        <div class="input-group">
+          <label>Gols Marcados</label>
+          <input type="number" min="0" [(ngModel)]="scoutEdit.gols">
         </div>
-
-        <div>
-          <label class="text-xs text-gray-400 font-semibold block mb-1">Assistências (👟 +1.0 pt)</label>
-          <input type="number" min="0" [disabled]="!cartolaService.isAdmin" [(ngModel)]="scoutForm.assistencias" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF00] disabled:opacity-50">
+        <div class="input-group">
+          <label>Assistências</label>
+          <input type="number" min="0" [(ngModel)]="scoutEdit.assistencias">
         </div>
-
-        <div>
-          <label class="text-xs text-gray-400 font-semibold block mb-1">Cartões Amarelos (🟨 -0.5 pts)</label>
-          <input type="number" min="0" [disabled]="!cartolaService.isAdmin" [(ngModel)]="scoutForm.cartoesAmarelos" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF00] disabled:opacity-50">
+        <div class="input-group">
+          <label>Cartões Amarelos</label>
+          <input type="number" min="0" [(ngModel)]="scoutEdit.cartoesAmarelos">
         </div>
-
-        <div>
-          <label class="text-xs text-gray-400 font-semibold block mb-1">Cartões Vermelhos (🟥 -2.0 pts)</label>
-          <input type="number" min="0" [disabled]="!cartolaService.isAdmin" [(ngModel)]="scoutForm.cartoesVermelhos" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-[#00FF00] disabled:opacity-50">
+        <div class="input-group">
+          <label>Cartões Vermelhos</label>
+          <input type="number" min="0" [(ngModel)]="scoutEdit.cartoesVermelhos">
         </div>
       </div>
 
-      <div *ngIf="cartolaService.isAdmin">
-        <button (click)="salvarScout()" class="w-full bg-[#00FF00] text-gray-950 font-black py-3.5 rounded-xl hover:opacity-90 transition shadow-lg shadow-[#00FF00]/20 cursor-pointer text-sm uppercase">
-          💾 Guardar Scout & Atualizar Nota
-        </button>
-      </div>
+      <button type="button" class="btn-primary mt-4" (click)="salvarScout()">
+        Salvar Estatísticas e Recalcular Nota
+      </button>
+    </div>
+    
+    <div class="card-box empty-state" *ngIf="!selectedPlayer">
+      <p class="text-muted">Selecione um atleta na lista ao lado para editar o scout.</p>
     </div>
   </div>
 </div>

@@ -1,26 +1,21 @@
-<div class="space-y-6">
-  <div>
-    <h2 class="text-2xl font-black text-white">Gestão de Atletas</h2>
-    <p class="text-sm text-gray-400">Registo de jogadores e controlo de pagamentos.</p>
+<div class="component-container">
+  <div class="page-header">
+    <h2>Gestão de Atletas</h2>
+    <p class="page-desc">Cadastro de jogadores e controle financeiro da liga.</p>
   </div>
 
-  <div *ngIf="!cartolaService.isAdmin" class="p-4 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-center space-x-3 text-blue-400 text-sm font-semibold">
-    <span class="text-xl">👁️</span>
-    <span>Modo Espectador: Estás em modo de leitura. Apenas o Administrador pode adicionar atletas ou alterar mensalidades.</span>
-  </div>
-
-  <div *ngIf="cartolaService.isAdmin" class="bg-[#121824] p-6 rounded-2xl border border-gray-800 shadow-xl">
-    <h3 class="text-sm font-bold text-white mb-4 uppercase tracking-wider text-[#00FF00]">Cadastrar Novo Atleta</h3>
+  <div class="card-box">
+    <span class="section-title">Cadastrar Novo Atleta</span>
     
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div>
-        <label class="text-xs text-gray-400 block mb-1">Nome do Atleta</label>
-        <input type="text" [(ngModel)]="novoNome" placeholder="Ex: Gabriel Jesus" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00FF00]">
+    <div class="form-row">
+      <div class="input-group">
+        <label>Nome do Atleta</label>
+        <input type="text" [(ngModel)]="novoNome" placeholder="Ex: Gabriel Jesus">
       </div>
 
-      <div>
-        <label class="text-xs text-gray-400 block mb-1">Posição</label>
-        <select [(ngModel)]="novaPosicao" class="w-full bg-[#0d131f] border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#00FF00]">
+      <div class="input-group">
+        <label>Posição</label>
+        <select [(ngModel)]="novaPosicao">
           <option value="GOL">Goleiro (GOL)</option>
           <option value="ZAG">Zagueiro (ZAG)</option>
           <option value="LAT">Lateral (LAT)</option>
@@ -29,45 +24,42 @@
         </select>
       </div>
 
-      <div class="flex items-end">
-        <button (click)="salvarAtleta()" class="w-full bg-[#00FF00] text-gray-950 font-extrabold py-2.5 rounded-xl hover:opacity-90 transition shadow-md shadow-[#00FF00]/20 cursor-pointer text-sm">
-          + Cadastrar Atleta
-        </button>
-      </div>
+      <button type="button" class="btn-primary" (click)="adicionarAtleta()">
+        Cadastrar Atleta
+      </button>
     </div>
   </div>
 
-  <div class="bg-[#121824] rounded-2xl border border-gray-800 overflow-hidden shadow-xl">
-    <div class="p-4 bg-[#0d131f] border-b border-gray-800 grid grid-cols-12 text-xs font-bold text-gray-400 uppercase tracking-wider">
-      <div class="col-span-5">Nome do Atleta</div>
-      <div class="col-span-3">Posição</div>
-      <div class="col-span-2 text-center">Mensalidade</div>
-      <div class="col-span-2 text-right">Ações</div>
-    </div>
-
-    <div class="divide-y divide-gray-800/60">
-      <div *ngFor="let p of cartolaService.players" class="p-4 grid grid-cols-12 items-center hover:bg-gray-800/30 transition-colors">
-        <div class="col-span-5 font-bold text-white text-sm flex items-center space-x-2">
-          <span>👤</span> <span>{{ p.nome }}</span>
-        </div>
-        <div class="col-span-3">
-          <span class="text-xs px-2.5 py-1 rounded bg-gray-800 text-gray-300 font-semibold">{{ p.posicao }}</span>
-        </div>
-        <div class="col-span-2 text-center">
-          <button *ngIf="cartolaService.isAdmin" (click)="cartolaService.toggleMensalidade(p.id)" [class]="p.mensalidadePaga ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-red-500/10 text-red-400 border border-red-500/30'" class="px-3 py-1 rounded-lg text-xs font-bold transition cursor-pointer">
-            {{ p.mensalidadePaga ? 'PAGO ✅' : 'PENDENTE ⚠️' }}
-          </button>
-          <span *ngIf="!cartolaService.isAdmin" [class]="p.mensalidadePaga ? 'text-emerald-400 font-bold text-xs' : 'text-red-400 font-bold text-xs'">
-            {{ p.mensalidadePaga ? 'PAGO ✅' : 'PENDENTE ⚠️' }}
-          </span>
-        </div>
-        <div class="col-span-2 text-right">
-          <button *ngIf="cartolaService.isAdmin" (click)="cartolaService.deletePlayer(p.id)" class="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors cursor-pointer" title="Excluir Atleta">
-            🗑️
-          </button>
-          <span *ngIf="!cartolaService.isAdmin" class="text-xs text-gray-500">—</span>
-        </div>
-      </div>
-    </div>
+  <div class="table-container mt-4">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome do Atleta</th>
+          <th>Posição</th>
+          <th class="text-center">Mensalidade</th>
+          <th class="text-right">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of cartolaService.players">
+          <td class="player-name">{{ player.nome }}</td>
+          <td><span class="pos-badge">{{ player.posicao }}</span></td>
+          <td class="text-center">
+            <button 
+              type="button"
+              class="status-badge" 
+              [class.paid]="player.mensalidadePaga"
+              (click)="togglePagamento(player)">
+              {{ player.mensalidadePaga ? 'Pago' : 'Pendente' }}
+            </button>
+          </td>
+          <td class="text-right">
+            <button type="button" class="btn-danger-text" (click)="removerAtleta(player.id)">
+              Remover
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>

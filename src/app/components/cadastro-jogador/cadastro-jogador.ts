@@ -16,19 +16,24 @@ export class CadastroJogadorComponent {
 
   constructor(public cartolaService: CartolaService) {}
 
-  salvarAtleta(): void {
-    if (!this.novoNome.trim()) {
-      alert('Por favor, insira o nome do atleta!');
-      return;
-    }
-
+  adicionarAtleta(): void {
+    if (!this.novoNome.trim()) return;
+    
     this.cartolaService.addPlayer({
       nome: this.novoNome,
       posicao: this.novaPosicao,
-      mensalidadePaga: false
+      mensalidadePaga: true
     });
 
     this.novoNome = '';
     this.novaPosicao = 'MEI';
+  }
+
+  togglePagamento(player: any): void {
+    this.cartolaService.toggleMensalidade(player.id);
+  }
+
+  removerAtleta(id: string): void {
+    this.cartolaService.deletePlayer(String(id));
   }
 }
